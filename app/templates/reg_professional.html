@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Create New Account{% endblock %}
+{% block style %}
+<style>
+    .flash {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+    .flash.success {
+        background-color: #d4edda; /* Green background */
+        color: #155724; /* Dark green text */
+    }
+    .flash.error {
+        background-color: #f8d7da; /* Red background */
+        color: #721c24; /* Dark red text */
+    }
+</style>
+{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<h3>Welcome to <u>A to Z HouseHold Services</u></h3>
+<h5>New Professional Registration</h5>
+<form method="POST" action="/submit" enctype="multipart/form-data">
+    <label for="email">Email: </label>
+    <input type="email" name="email"><br>
+    <label for="password">Password: </label>
+    <input type="password" name="password"><br>
+    <label for="name">Name: </label>
+    <input type="text" name="name"><br>
+    <label for="exp">Year of Experience: </label>
+    <input type="number" name="exp"><br>
+    Services:             
+    {% for service in ServiceList %}
+        <input type="checkbox" name="service" value="{{ service }}">
+        <label for="{{ service }}">{{ service }}  </label>
+        {% if loop.index % 7 == 0 %}
+            <br>
+        {% endif %}
+    {% endfor %}<br>
+    <label for="file">Upload Document(pdf): </label>
+    <input type="file" name="file" required>
+    <label for="address">Address: </label>
+    <textarea name="address" rows="5" cols="33"></textarea><br>
+    <label for="pin">PIN Code: </label>
+    <input type="text" name="pin"><br>
+    <input type="submit" value="Register">
+</form>
+<a href="https://www.w3schools.com">Login</a>
+
+
+{% endblock %}

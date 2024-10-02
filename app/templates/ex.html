@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display PDF</title>
+</head>
+<body>
+
+    {{ name }}, {{ password }}, {{ YoE }}, {{ pin }}, {{ email }}, {{ address }}
+
+    {% for i in services %}
+        {{ i }}
+    {% endfor %}
+
+    <h1>Display PDF using iframe</h1>
+    <iframe src="/home/vivek/Desktop/CER.pdf" width="100%" height="600px">
+        This browser does not support PDFs. Please download the PDF to view it: 
+        <a href="/home/vivek/Desktop/CER.pdf">Download PDF</a>
+    </iframe>
+
+    <h1>Display PDF using embed</h1>
+    <embed src="/home/vivek/Desktop/CER.pdf" width="100%" height="600px" type="application/pdf">
+
+    <h1>Display PDF using object</h1>
+    <object data="{{file}}" type="application/pdf" width="100%" height="600px">
+        <p>Your browser does not support PDFs. 
+           <a href="/home/vivek/Desktop/CER.pdf">Download the PDF</a>.</p>
+    </object>
+
+</body>
+</html>

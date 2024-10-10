@@ -7,7 +7,7 @@
 </head>
 <body>
 
-    {{ name }}, {{ password }}, {{ YoE }}, {{ pin }}, {{ email }}, {{ address }}
+    <!-- {{ name }}, {{ password }}, {{ YoE }}, {{ pin }}, {{ email }}, {{ address }}
 
     {% for i in services %}
         {{ i }}
@@ -26,7 +26,11 @@
     <object data="{{ url_for('static', filename=UpFile) }}" type="application/pdf" width="100%" height="600px">
         <p>Your browser does not support PDFs. 
            <a href="{{ url_for('static', filename=UpFile) }}">Download the PDF</a>.</p>
-    </object>
+    </object> -->
+
+    <p>You're logged in!</p>
+    <p>Your username is: {{current_user.username}}</p>
+    <p>Your Password is: {{current_user.password}}</p>
 
 </body>
 </html>

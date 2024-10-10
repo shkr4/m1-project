@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<h3>Welcome to <u>A to Z HouseHold Services</u></h3> <h4><a href="">Register as Professional</a></h4>
-<form method="post" action="">
-    <label for="email">Email: </label>
-    <input type="email" name="fname"><br>
-    <label for="password">Last name:</label>
+<h3>Welcome to <u>A to Z HouseHold Services</u></h3> <h4><a href="{{ url_for('main.reg_professional') }}">Register as Professional</a></h4>
+<form method="post" action="/login">
+    <label for="username">Username: </label>
+    <input type="text" name="username"><br>
+    <label for="password">Password: </label>
     <input type="password" name="password"><br><br>
     <input type="submit" value="Login">
 </form>

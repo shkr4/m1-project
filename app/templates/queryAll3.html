@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>queryAll3</title>
+</head>
+<body>
+	<header>Hi, Your New Entry Has Been Added with Following Deatails:</header>
+	<div align="center">
+		<h3>ID: {{ ID }}</h3><br>
+		<h3>Name: {{ name }}</h3><br>
+		<h3>E-mail: {{ email }}</h3>
+	</div><br>
+	<a href="{{ url_for('showAll') }}"><p>Click here to querry all records</p></a>
+</body>
+</html>

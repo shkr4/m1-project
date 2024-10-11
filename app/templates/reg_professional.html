@@ -1,34 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Create New Account{% endblock %}
-{% block style %}
-<style>
-    .flash {
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 5px;
-    }
-    .flash.success {
-        background-color: #d4edda; /* Green background */
-        color: #155724; /* Dark green text */
-    }
-    .flash.error {
-        background-color: #f8d7da; /* Red background */
-        color: #721c24; /* Dark red text */
-    }
-</style>
-{% endblock %}
+{% block title %}Professionals' Registration{% endblock %}
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="flash {{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
 <h3>Welcome to <u>A to Z HouseHold Services</u></h3>
-<h5>New Professional Registration</h5>
+<h5>New Professional's Registration</h5>
 <form method="POST" action="/submit" enctype="multipart/form-data">
     <label for="email">Email: </label>
     <input type="text" name="username"><br>

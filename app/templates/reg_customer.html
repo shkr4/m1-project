@@ -1,21 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Create New Account{% endblock %}
+
 {% block content %}
-<h3>Welcome to <u>A to Z HouseHold Services</u></h3>
-<h5>New Customer Registration</h5>
-<form method="post" action="">
-    <label for="email">Email: </label>
-    <input type="email" name="email"><br>
-    <label for="password">Password: </label>
-    <input type="password" name="password"><br><br>
-    <label for="name">Name: </label>
-    <input type="text" name="name"><br>
-    <label for="address">Address: </label>
-    <textarea name="address" rows="5" cols="33"></textarea><br>
-    <label for="pin">PIN Code: </label>
-    <input type="number" name="pin"><br>
-    <input type="submit" value="Submit">
-</form>
-<a href="https://www.w3schools.com">Login</a>
+    <h3>Welcome to <u>A to Z HouseHold Services</u></h3>
+    <h5>New Customer Registration</h5>
+    <form method="post" action="/register">
+        <label for="name">Name: </label>
+        <input type="text" name="name"><br>
+        <label for="username">Username: </label>
+        <input type="text" name="username"><br>
+        <label for="email">Email: </label>
+        <input type="email" name="email"><br>
+        <label for="password">Password: </label>
+        <input type="password" name="password"><br><br>
+        <label for="phone">Phone: </label>
+        <input type="number" name="phone"><br>
+        <label for="address">Address: </label>
+        <textarea name="address" rows="5" cols="33"></textarea><br>
+        <label for="pin">PIN Code: </label>
+        <input type="number" name="pin"><br>
+        <input type="submit" value="Submit">
+    </form>
 {% endblock %}
   

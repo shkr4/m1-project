@@ -1,36 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display PDF</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}{{current_user.username}}{% endblock %}
 
-    <!-- {{ name }}, {{ password }}, {{ YoE }}, {{ pin }}, {{ email }}, {{ address }}
+{% block content %}
 
-    {% for i in services %}
-        {{ i }}
-    {% endfor %}
+<div style="position: absolute; right: 0;">
+    Username: {{current_user.username}}<br>
+    I am a: {{current_user.role}}<br>
+    <a href="{{url_for('main.logout')}}"><u>Logout</u></a>
+</div>
 
-    <h1>Display PDF using iframe</h1>
-    <iframe src="{{ url_for('static', filename=UpFile) }}" width="100%" height="600px">
-        This browser does not support PDFs. Please download the PDF to view it: 
-        <a href="{{ url_for('static', filename=UpFile) }}">Download PDF</a>
-    </iframe>
+<h1>Dashboard of <u>{{current_user.name}}</u></h1>
 
-    <h1>Display PDF using embed</h1>
-    <embed src="{{ url_for('static', filename=UpFile) }}" width="100%" height="600px" type="application/pdf">
 
-    <h1>Display PDF using object</h1>
-    <object data="{{ url_for('static', filename=UpFile) }}" type="application/pdf" width="100%" height="600px">
-        <p>Your browser does not support PDFs. 
-           <a href="{{ url_for('static', filename=UpFile) }}">Download the PDF</a>.</p>
-    </object> -->
-
-    <p>You're logged in!</p>
-    <p>Your username is: {{current_user.username}}</p>
-    <p>Your Password is: {{current_user.password}}</p>
-
-</body>
-</html>
+{% endblock %}

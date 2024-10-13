@@ -21,6 +21,7 @@ class Professionals(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # Primary key
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    business_name = db.Column(db.String, unique=True)
     order = db.Column(db.PickleType, db.ForeignKey('user.order'))
     services = db.Column(db.PickleType, db.ForeignKey('user.order'))
     YoE = db.Column(db.Integer, primary_key=True)

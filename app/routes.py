@@ -78,11 +78,14 @@ def reg_professional():
             return render_template("reg_professional.html", ServiceList=ServiceList)
 
         YoE = request.form["exp"]
-        name = request.form["name"]
+        Bname = request.form["business_name"]
         UpFile = request.files['file']
         pin = request.form["pin"]
         address = request.form["address"]
         role = "professional"
+
+        #modify user role from customer to professional
+        
 
         services = {}
         for service in request.form.getlist('service'):

@@ -24,5 +24,10 @@ class Professional(UserMixin, db.Model):
     pin = db.Column(db.Integer)
 
 
+class AvailableServices(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    service = db.Column(db.String)
+    price = db.Column(db.Integer)
+
 # user = User(name = name, password = password, email = email, YoE = YoE, services = service, UpFile = UpFile, pin = pin,
 #     address = address)

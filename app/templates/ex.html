@@ -3,13 +3,8 @@
 
 {% block content %}
 
-<div style="position: absolute; right: 0;">
-    Username: {{current_user.username}}<br>
-    I am a: {{current_user.role}}<br>
-    <a href="{{url_for('main.logout')}}"><u>Logout</u></a>
-</div>
-
 <h1>Dashboard of <u>{{current_user.name}}</u></h1>
 
+{{services}}
 
 {% endblock %}

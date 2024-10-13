@@ -22,6 +22,15 @@
     </style>
 </head>
 <body>
+
+    {% if current_user.name %}
+        <div style="position: absolute; right: 0;">
+            Username: {{current_user.username}}<br>
+            I am a: {{current_user.role}}<br>
+            <a href="{{url_for('main.logout')}}"><u>Logout</u></a>
+        </div>
+    {% endif %}
+
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}

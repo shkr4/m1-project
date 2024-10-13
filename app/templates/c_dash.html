@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{current_user.username}}{% endblock %}
+
+{% block content %}
+
+<h1>Dashboard of <u>{{current_user.name}}</u></h1>
+
+<h5>What Service are you looking for? </h5>
+<div>
+    <form action="/FindService">
+        <input type="text" name="req_service">
+        <input type="submit" value="Find Service">
+    </form>
+</div>
+
+{% if current_user.role == "customer" %}
+<div style="position: absolute; right: 0; bottom: 0;">
+    <a href="{{url_for('main.reg_professional')}}">Register as Service Provider</a>
+</div>
+{% endif %}
+
+
+{% endblock %}
+

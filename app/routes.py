@@ -55,7 +55,7 @@ def login():
         if user and (user.password == password):
             login_user(user)
             flash('Login successful!', 'success')
-            return render_template('ex.html', current_user=current_user)
+            return redirect(url_for('main.dashboard'))
         else:
             flash('Invalid credentials!', 'danger')
             return render_template('login.html')
@@ -77,15 +77,18 @@ def reg_professional():
         if request.method == "GET":
             return render_template("reg_professional.html", ServiceList=ServiceList)
 
-        name = request.form["name"]
-        password = request.form["password"]
-        email = request.form["email"]
         YoE = request.form["exp"]
-        services = request.form.getlist("service")
+        name = request.form["name"]
         UpFile = request.files['file']
         pin = request.form["pin"]
         address = request.form["address"]
-        username = request.form["username"]
+        role = "professional"
+
+        services = {}
+        for service in request.form.getlist('service'):
+            price = request.form.get(f'price_{service}')
+            description = request.form.get(f'description_{service}')
+            services[service] = [price, description]
 
         upload_folder = current_app.config['UPLOAD_FOLDER']
 
@@ -96,17 +99,21 @@ def reg_professional():
             UpFile.save(filepath)  # Save the file to the upload folder
             # return "File uploaded successfully!", 200
         else:
-            flash('Please upload a valid file!', "error")
-            return render_template("reg_professional.html", ServiceList=ServiceList)
+            pass
+            # flash('Please upload a valid file!', "error")
+            # return render_template("reg_professional.html", ServiceList=ServiceList)
 
-        file_url = f"uploads/{UpFile.filename}"
+        file_url = "temp"  # f"uploads/{UpFile.filename}"
 
-        AddUser(name, email, username, password, role)
-
-        return render_template("ex.html", name=name, password=password, email=email, YoE=YoE, services=services,
+        return render_template("c_dash.html", name=name, YoE=YoE, services=services,
                                UpFile=file_url, pin=pin, address=address)
     flash("You must be a user and logged in to register as a professional", "error")
     return redirect(url_for('main.login'))
+
+
+@main_bp.route('/dashboard')
+def dashboard():
+    return render_template('c_dash.html', current_user=current_user)
 
 
 @main_bp.route('/createNew', methods=['POST'])

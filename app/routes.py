@@ -112,8 +112,21 @@ def reg_professional():
 
 
 @main_bp.route('/dashboard')
+@login_required
 def dashboard():
     return render_template('c_dash.html', current_user=current_user)
+
+
+@main_bp.route('/FindService', methods=['POST'])
+@login_required
+def FindService():
+    req_service = request.form["req_service"]
+    # Search for services that match the requested service
+    avlbleService = Services.query.filter(
+        Services.service.like(f'%{req_service}%')).all()  # Get all matches
+
+    # Pass both the requested service and the results to the template
+    return render_template('find_service_result.html', req_service=req_service, services=avlbleService)
 
 
 @main_bp.route('/createNew', methods=['POST'])

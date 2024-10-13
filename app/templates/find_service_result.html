@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Results for "{{ req_service }}"</h2>
+
+{% if services %}
+    <ol>
+    {% for service in services %}
+            <div>
+                <li>
+                    <form action="/PlaceOrder" method="post">
+                        <input type="hidden" name="customer" value="{{current_user.id}}">
+                        <input type="hidden" name="professional" value="{{service.provider}}">                    
+                        <p>Service Name: <u>{{ service.service }}</u></p>
+                        <P>Price: <u>{{ service.price }}</u></P>
+                        <p>Service Provider: <u>{{ service.provider }}</u></p>
+                        <input type="submit" value="Book">
+                </form>
+                    <br><br>
+                </li>
+            </div>
+    {% endfor %}
+    </ol>
+{% else %}
+    <p>No services found.</p>
+{% endif %}
+
+{% endblock %}

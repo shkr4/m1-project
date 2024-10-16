@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+
 {% block content %}
 
 <h2>Results for "{{ req_service }}"</h2>
@@ -11,10 +12,12 @@
                 <li>
                     <form action="/PlaceOrder" method="post">
                         <input type="hidden" name="customer" value="{{current_user.id}}">
-                        <input type="hidden" name="professional" value="{{service.provider}}">                    
+                        <!-- <input type="hidden" name="professional" value="{{service.professional}}"> -->
+                        <input type="hidden" name="professional_id" value="{{service.serviceProvider}}">                    
                         <p>Service Name: <u>{{ service.service }}</u></p>
                         <P>Price: <u>{{ service.price }}</u></P>
-                        <p>Service Provider: <u>{{ service.provider }}</u></p>
+                        <p>Service Provider: <u>{{ service.professional.business_name }}</u></p>
+                        <p>Service Description: {{ service.description }}</p>
                         <input type="submit" value="Book">
                 </form>
                     <br><br>

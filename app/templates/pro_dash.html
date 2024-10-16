@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{current_user.username}}{% endblock %}
+
+{% block content %}
+
+<h1>Dashboard of <u>{{current_user.name}}</u></h1>
+<h2>Business Name: {{professional.business_name}}</h2>
+
+{% if professional.orders %}
+    <h5>Your Orders:</h5>
+    <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+        <ol>
+            {% for order in orders %}
+                <li>
+                    <p>Order ID: {{order.order_id}}</p>
+                    <p>Customer's Name: {{order.user.name}}</p>
+                    <p>Status: {{order.status}}</p>
+                    {% if order.status == "open" %}
+                        <div>
+                            <form method="post" action="/acceptrejectit">
+                                <!-- <input type="hidden" name="req" value="close"> -->
+                                <input type="Submit" name="b_value" value="Accept"> <input type="Submit" name="b_value" value="Reject">
+                            </form>
+                        </div>
+                    
+                    {% else %}
+
+                        <div>
+                            <p>Rating You recieved for this order: {{order.rating}}</p>
+                        </div>
+
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+    </div>  
+{% endif %}
+
+    
+
+{% if current_user.role == "customer" %}
+<div style="position: absolute; right: 0; bottom: 0;">
+    <a href="{{url_for('main.reg_professional')}}">Register as Service Provider</a>
+</div>
+{% endif %}
+
+
+{% endblock %}
+

@@ -13,7 +13,7 @@ login_manager = LoginManager()
 
 @main_bp.route('/')
 def home():
-    return render_template("login.html")
+    return redirect(url_for('main.login'))
 
 
 @main_bp.route('/register', methods=['GET', 'POST'])
@@ -26,9 +26,8 @@ def register():
         phone = request.form['phone']
         address = request.form['address']
         role = "customer"
-        order = None
         new_user = User(username=username, password=password,
-                        name=name, email=email, role=role, phone=phone, address=address, order=order)
+                        name=name, email=email, role=role, phone=phone, address=address)
 
         try:
             db.session.add(new_user)
@@ -60,7 +59,7 @@ def login():
             flash('Invalid credentials!', 'danger')
             return render_template('login.html')
     else:
-        return render_template('login.html')
+        return redirect(url_for('main.dashboard'))
 
 
 @main_bp.route('/logout')
@@ -76,48 +75,97 @@ def reg_professional():
     if current_user.role == "customer":
         if request.method == "GET":
             return render_template("reg_professional.html", ServiceList=ServiceList)
-
+        # Gather data from the form
         YoE = request.form["exp"]
-        Bname = request.form["business_name"]
+        Bname = request.form["b_name"]
         UpFile = request.files['file']
         pin = request.form["pin"]
         address = request.form["address"]
-        role = "professional"
-
-        #modify user role from customer to professional
-        
-
+        user_id = current_user.id
+        orders = []
         services = {}
+
         for service in request.form.getlist('service'):
             price = request.form.get(f'price_{service}')
             description = request.form.get(f'description_{service}')
             services[service] = [price, description]
 
-        upload_folder = current_app.config['UPLOAD_FOLDER']
+        # Update user role in user table to "professional"
+
+        current_user.role = "professional"
+
+        # Add the this user as a professional in professional database
+
+        NewPro = Professionals(user_id=user_id, business_name=Bname,
+                               pin=pin, address=address, orders=orders,
+                               ServiceOffered=services, YoE=YoE,
+                               status="active")
+
+        db.session.add(NewPro)
+        db.session.commit()
+        # services in the Services Table
+
+        serviceProvider = Professionals.query.filter_by(
+            user_id=user_id).first().id
+        for item in services.keys():
+            ser = item
+            price = services[item][0]
+            description = services[item][1]
+
+            newService = Services(service=ser, price=price,
+                                  description=description,
+                                  serviceProvider=serviceProvider)
+            db.session.add(newService)
+
+        db.session.commit()
+
+        # Save the uploaded file in /static/uploads
 
         if UpFile and UpFile.filename.endswith('.pdf'):
-            # Save the file
-            filepath = os.path.join(
-                current_app.config['UPLOAD_FOLDER'], UpFile.filename)
-            UpFile.save(filepath)  # Save the file to the upload folder
-            # return "File uploaded successfully!", 200
+            SaveFile(UpFile, current_app, current_user)
         else:
-            pass
-            # flash('Please upload a valid file!', "error")
-            # return render_template("reg_professional.html", ServiceList=ServiceList)
+            flash('Please upload a valid file!', "error")
+            return render_template("reg_professional.html", ServiceList=ServiceList)
 
         file_url = "temp"  # f"uploads/{UpFile.filename}"
 
-        return render_template("c_dash.html", name=name, YoE=YoE, services=services,
-                               UpFile=file_url, pin=pin, address=address)
+        return render_template("pro_dash.html", professional=Professionals.query.filter_by(
+            user_id=user_id).first())
     flash("You must be a user and logged in to register as a professional", "error")
     return redirect(url_for('main.login'))
 
 
 @main_bp.route('/dashboard')
-@login_required
 def dashboard():
-    return render_template('c_dash.html', current_user=current_user)
+    if not current_user.is_authenticated:
+        return render_template('login.html')
+    elif current_user.role == "customer":
+        ThisUsersOrders = Order.query.filter_by(user_id=current_user.id).all()
+        return render_template('c_dash.html', orders=ThisUsersOrders)
+    elif current_user.role == "professional":
+        professional = Professionals.query.filter_by(
+            user_id=current_user.id).first()
+        if professional.status == "blocked":
+            return "<p>Your Services are blocked. Contact Admin</p>"
+        orders = professional.orders
+        return render_template('pro_dash.html', professional=professional, orders=orders)
+    elif current_user.role == "admin":
+        return render_template('admin.html')
+
+# @main_bp.route('/acceptrejectit')
+# def AcceptRejectIt():
+
+
+@main_bp.route('/close_it', methods=['POST'])
+def closeIt():
+    order_id = request.form["if_close"]
+    rating = request.form["rating"]
+    order = Order.query.get(order_id)
+    order.status = "close"
+    order.rating = float(rating)
+    db.session.commit()
+
+    return redirect(url_for('main.dashboard'))
 
 
 @main_bp.route('/FindService', methods=['POST'])
@@ -125,24 +173,28 @@ def dashboard():
 def FindService():
     req_service = request.form["req_service"]
     # Search for services that match the requested service
-    avlbleService = Services.query.filter(
-        Services.service.like(f'%{req_service}%')).all()  # Get all matches
+    avlbleService = results = Services.query.join(Professionals, Services.serviceProvider == Professionals.id) \
+        .filter(
+        Services.service.like(f'%{req_service}%'),
+        Professionals.status == 'active'
+    ).all()
+
+    # Services.query.filter(
+    #     Services.service.like(f'%{req_service}%')).all()  # Get all matches
 
     # Pass both the requested service and the results to the template
     return render_template('find_service_result.html', req_service=req_service, services=avlbleService)
 
 
-@main_bp.route('/createNew', methods=['POST'])
-def createNew():
-    ID = request.form['ID']
-    username = request.form['username']
-    email = request.form['email']
-    new_user = User(ID=ID, username=username, email=email)
-    db.session.add(new_user)
+@main_bp.route('/PlaceOrder', methods=['POST'])
+@login_required
+def PlaceOrder():
+    user_id = request.form["customer"]
+    professional_id = request.form["professional_id"]
+
+    new_order = Order(user_id=user_id, professional_id=professional_id,
+                      status="open", rating=0.0)
+    db.session.add(new_order)
     db.session.commit()
-    return "<p>ok</p>"
 
-
-@main_bp.route('/form3')
-def form3():
-    return render_template('form3.html')
+    return redirect(url_for('main.dashboard'))

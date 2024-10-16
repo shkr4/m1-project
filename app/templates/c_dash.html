@@ -13,6 +13,34 @@
     </form>
 </div>
 
+{% if orders %}
+    <h5>Your Orders:</h5>
+    <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">        
+            <ol>
+                {% for order in orders %}
+                <li>
+                    <p>Order ID: <b>{{order.order_id}}</b></p>
+                    <p>Professional's Name: <b>{{order.professional.business_name}}</b></p>
+                    <p>Status: <b>{{order.status}}</b></p>
+                    {% if order.rating %}
+                        <p>Rating: <b>{{order.rating}}</b></p>
+                    {% endif %}
+                    {% if order.status == "open" %}
+                        <form method="post" action="/close_it">
+                            <input type="hidden" name="if_close" value="{{order.order_id}}">
+                            <label for="rating"><b>Who many Stars for this service: </b></label>
+                            <input type="number" name="rating"><br>
+                            <input type="Submit" value="Close">
+                        </form>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ol>
+       
+{% endif %}
+
+    </div>
+
 {% if current_user.role == "customer" %}
 <div style="position: absolute; right: 0; bottom: 0;">
     <a href="{{url_for('main.reg_professional')}}">Register as Service Provider</a>

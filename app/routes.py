@@ -5,6 +5,8 @@ from .objs import *
 from . import db
 from .models import *
 import os
+from datetime import datetime
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -59,7 +61,27 @@ def login():
             flash('Invalid credentials!', 'danger')
             return render_template('login.html')
     else:
-        return redirect(url_for('main.dashboard'))
+        return render_template('login.html')
+
+
+@main_bp.route('/dashboard')
+def dashboard():
+    if not current_user.is_authenticated:
+        return render_template('login.html')
+    elif current_user.role == "customer":
+        ThisUsersOrders = Order.query.order_by(Order.booked_at.desc()).all()
+        return render_template('c_dash.html', orders=ThisUsersOrders)
+    elif current_user.role == "professional":
+        professional = Professionals.query.filter_by(
+            user_id=current_user.id).first()
+        if professional.status == "blocked":
+            return "<p>Your Services are blocked. Contact Admin</p>"
+        professional_id = professional.id
+        orders = Order.query.filter_by(professional_id=professional_id).order_by(
+            Order.booked_at.desc()).all()
+        return render_template('pro_dash.html', professional=professional, orders=orders)
+    elif current_user.role == "admin":
+        return render_template('admin/index.html')
 
 
 @main_bp.route('/logout')
@@ -131,38 +153,48 @@ def reg_professional():
 
         return render_template("pro_dash.html", professional=Professionals.query.filter_by(
             user_id=user_id).first())
-    flash("You must be a user and logged in to register as a professional", "error")
-    return redirect(url_for('main.login'))
+    elif current_user.role in ["professional", "admin"]:
+        return redirect(url_for('main.dashboard'))
+    else:
+        flash("You must be a user and logged in to register as a professional", "error")
+        return redirect(url_for('main.login'))
 
 
-@main_bp.route('/dashboard')
-def dashboard():
-    if not current_user.is_authenticated:
-        return render_template('login.html')
-    elif current_user.role == "customer":
-        ThisUsersOrders = Order.query.filter_by(user_id=current_user.id).all()
-        return render_template('c_dash.html', orders=ThisUsersOrders)
-    elif current_user.role == "professional":
-        professional = Professionals.query.filter_by(
-            user_id=current_user.id).first()
-        if professional.status == "blocked":
-            return "<p>Your Services are blocked. Contact Admin</p>"
-        orders = professional.orders
-        return render_template('pro_dash.html', professional=professional, orders=orders)
-    elif current_user.role == "admin":
-        return render_template('admin.html')
+@main_bp.route('/accept_reject_it', methods=['POST'])
+def AcceptRejectIt():
+    val = request.form.get("b_value")
+    order_id = request.form.get("order_id")
 
-# @main_bp.route('/acceptrejectit')
-# def AcceptRejectIt():
+    if not val or not order_id:
+        return redirect(url_for('main.dashboard'))
+
+    order = Order.query.filter_by(order_id=order_id).first()  # Fetch the order
+
+    if order:  # Ensure the order exists
+        if val == "Accept":
+            order.status = "accepted"
+            order.accepted_at = datetime.utcnow()  # Correct usage
+        elif val == "Reject":
+            order.status = "rejected"
+            order.closed_by = "professional"
+            order.closed_at = datetime.utcnow()  # Correct usage
+
+        db.session.commit()  # Commit changes to the database
+
+    return redirect(url_for('main.dashboard'))
 
 
 @main_bp.route('/close_it', methods=['POST'])
 def closeIt():
     order_id = request.form["if_close"]
     rating = request.form["rating"]
+    remark = request.form["remark"]
     order = Order.query.get(order_id)
     order.status = "close"
     order.rating = float(rating)
+    order.remark_by_customer = remark
+    order.closed_at = datetime.utcnow()
+    order.closed_by = "customer"
     db.session.commit()
 
     return redirect(url_for('main.dashboard'))
@@ -173,7 +205,7 @@ def closeIt():
 def FindService():
     req_service = request.form["req_service"]
     # Search for services that match the requested service
-    avlbleService = results = Services.query.join(Professionals, Services.serviceProvider == Professionals.id) \
+    avlbleService = Services.query.join(Professionals, Services.serviceProvider == Professionals.id) \
         .filter(
         Services.service.like(f'%{req_service}%'),
         Professionals.status == 'active'
@@ -193,7 +225,8 @@ def PlaceOrder():
     professional_id = request.form["professional_id"]
 
     new_order = Order(user_id=user_id, professional_id=professional_id,
-                      status="open", rating=0.0)
+                      status="requested", rating=0.0,
+                      )
     db.session.add(new_order)
     db.session.commit()
 

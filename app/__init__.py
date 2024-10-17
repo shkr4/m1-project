@@ -36,20 +36,21 @@ def create_app():
 
     from .models import User, Professionals, Order, Services
 
-    admin = Admin(app, name='My Admin', template_mode='bootstrap3')
-
-    # Add model views to Flask-Admin
-    admin.add_view(ModelView(User, db.session))
-    admin.add_view(ModelView(Professionals, db.session))
-    admin.add_view(ModelView(Order, db.session))
-    admin.add_view(ModelView(Services, db.session))
-
     with app.app_context():
         db.create_all()
 
     # Register Blueprints or routes
     from .routes import main_bp
     app.register_blueprint(main_bp)
+
+    admin = Admin(app, name='My Admin Panel', template_mode='bootstrap3')
+
+    from .adminClass import UserAdmin, ProfessionalsAdmin, OrderAdmin, ServicesAdmin
+    # Add views to Flask-Admin
+    admin.add_view(UserAdmin(User, db.session))
+    admin.add_view(ProfessionalsAdmin(Professionals, db.session))
+    admin.add_view(OrderAdmin(Order, db.session))
+    admin.add_view(ServicesAdmin(Services, db.session))
 
     return app
 

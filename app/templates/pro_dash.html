@@ -15,11 +15,15 @@
                     <p>Order ID: {{order.order_id}}</p>
                     <p>Customer's Name: {{order.user.name}}</p>
                     <p>Status: {{order.status}}</p>
-                    {% if order.status == "open" %}
+                    <p>Booking Date: {{order.booked_at}}</p>
+                    {% if order.status == "requested" %}
                         <div>
-                            <form method="post" action="/acceptrejectit">
-                                <!-- <input type="hidden" name="req" value="close"> -->
-                                <input type="Submit" name="b_value" value="Accept"> <input type="Submit" name="b_value" value="Reject">
+                            <form method="post" action="/accept_reject_it">
+                                <input type="hidden" name="order_id" value="{{order.order_id}}">
+                                <!-- <input type="hidden" name="reject" value="reject">
+                                <input type="hidden" name="accept" value="accept"> -->
+                                <input type="submit" name="b_value" value="Accept">
+                                <input type="submit" name="b_value" value="Reject">
                             </form>
                         </div>
                     

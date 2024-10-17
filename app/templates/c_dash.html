@@ -25,12 +25,14 @@
                     {% if order.rating %}
                         <p>Rating: <b>{{order.rating}}</b></p>
                     {% endif %}
-                    {% if order.status == "open" %}
+                    {% if order.status == "requested" or order.status == "accepted" %}
                         <form method="post" action="/close_it">
                             <input type="hidden" name="if_close" value="{{order.order_id}}">
                             <label for="rating"><b>Who many Stars for this service: </b></label>
                             <input type="number" name="rating"><br>
-                            <input type="Submit" value="Close">
+                            <label for="remark">Feedback: </label>
+                            <input type="text" name="remark">
+                            <input type="submit" value="Close">
                         </form>
                     {% endif %}
                 </li>

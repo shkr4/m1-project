@@ -1,6 +1,9 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.ext.mutable import MutableDict
+from flask_admin import Admin
+from sqlalchemy.sql import func
+# Custom index view
 
 
 class User(UserMixin, db.Model):
@@ -15,9 +18,15 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String)
     address = db.Column(db.Text)
     status = db.Column(db.String)
+    # Set default to the current timestamp
+    created_at = db.Column(db.DateTime, default=func.now())
+    updated_at = db.Column(
+        db.DateTime, default=func.now(), onupdate=func.now())
 
-    # The 'backref' creates a virtual column in the Order table linking back to User
     orders = db.relationship('Order', backref='user', lazy=True)
+
+    def __repr__(self):
+        return f'{self.name}'
 
 
 class Professionals(db.Model):
@@ -31,12 +40,17 @@ class Professionals(db.Model):
     pin = db.Column(db.Integer)
     status = db.Column(db.String)
     ServiceOffered = db.Column(MutableDict.as_mutable(db.PickleType))
+    # Set default to the current timestamp
+    created_at = db.Column(db.DateTime, default=func.now())
+    updated_at = db.Column(
+        db.DateTime, default=func.now(), onupdate=func.now())
 
-    # 'backref' links Orders to Professionals
     orders = db.relationship('Order', backref='professional', lazy=True)
-
-    # 'backref' links Services to Professionals
     services = db.relationship('Services', backref='professional', lazy=True)
+    user = db.relationship('User', backref='professionals')
+
+    def __repr__(self):
+        return f'{self.business_name}'
 
 
 class Order(db.Model):
@@ -48,6 +62,12 @@ class Order(db.Model):
         'professionals.id'), nullable=False)
     status = db.Column(db.String(20), nullable=False)
     rating = db.Column(db.Float(precision=2, decimal_return_scale=2))
+    # Set default to the current timestamp
+    booked_at = db.Column(db.DateTime, default=func.now())
+    accepted_at = db.Column(db.DateTime)
+    closed_at = db.Column(db.DateTime)
+    closed_by = db.Column(db.String)
+    remark_by_customer = db.Column(db.Text)
 
     # No need for explicit relationship definition here as 'backref' handles it
 
@@ -59,9 +79,8 @@ class Services(db.Model):
     service = db.Column(db.String, nullable=False)
     description = db.Column(db.String(200))
     price = db.Column(db.Integer)
-
-    # FK to Professionals, pointing to `id` of the professionals table
     serviceProvider = db.Column(db.Integer, db.ForeignKey('professionals.id'))
+    created_at = db.Column(db.DateTime, default=func.now())
 
     # 'backref' allows easy access to related professionals in the relationship
 

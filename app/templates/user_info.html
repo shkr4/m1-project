@@ -1,34 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{{current_user.name}}</title>
-</head>
-<body>
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="flash {{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
- {% endwith %}
-	
-	<h1>User's Information: </h1>
+{% extends 'base.html' %}
+
+{% block title %}{{current_user.username}}{% endblock %}
+
+{% block content %}
+<h1>User's Information of {{current_user.name}}</h1>
 	<div style="position: absolute; left: 50%; transform: translateX(-50%);">
 		<form method="post" action="/user_info_edit">
-			<p>Name: <b>{{current_user.name}}</b></p> <input type="text" name="changedName" placeholder="Edit Name?">
-			<p>Username: <b>{{current_user.username}}</b></p> <input type="text" name="changedUsername" placeholder="Edit Username?">
-			<p>E-Mail: <b>{{current_user.email}}</b></p> <input type="text" name="changedEmail" placeholder="Edit E-Mail?">
-			<p>Phone: <b>{{(current_user.phone | string)[:3]+"xxxx"+ (current_user.phone | string)[8:]}}</b></p> <input type="text" name="changedPhone" placeholder="Edit Phone Number?">
+			<p>Name: <b>{{current_user.name}}</b></p> <input type="text" name="name" placeholder="Edit Name?">
+			<p>Username: <b>{{current_user.username}}</b></p> <input type="text" name="username" placeholder="Edit Username?">
+			<p>E-Mail: <b>{{current_user.email}}</b></p> <input type="text" name="email" placeholder="Edit E-Mail?">
+			<p>Phone: <b>{{(current_user.phone | string)[:3]+"xxxx"+ (current_user.phone | string)[8:]}}</b></p> <input type="text" name="phone" placeholder="Edit Phone Number?">
 			<p>I am a: <b>{{current_user.role}}</b></p>
-			<p>Address: <b>{{current_user.address}}</b></p> <input type="text" name="changedAddress" placeholder="Edit Address?">
+			<p>Address: <b>{{current_user.address}}</b></p> <input type="text" name="address" placeholder="Edit Address?">
 			<p>Signed Up at: <b>{{current_user.created_at}}</b></p>
 			<p>Updated On at: <b>{{current_user.updated_at}}</b></p>
 			<input type="submit" value="Submit Changes">
 		</form>
 	</div>
-</body>
-</html>
+{% endblock %}

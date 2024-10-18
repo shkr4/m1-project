@@ -15,8 +15,50 @@ login_manager = LoginManager()
 
 @main_bp.route('/')
 def home():
-    return redirect(url_for('main.login'))
+    if not current_user.is_authenticated:
+        return render_template('login.html')
+    else:
+        return redirect(url_for('main.dashboard'))
 
+@main_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+
+        if user and (user.password == password):
+            login_user(user)
+            flash('Login successful!', 'success')
+            return redirect(url_for('main.dashboard'))
+        else:
+            flash('Invalid credentials!', 'danger')
+            return render_template('login.html')
+    else:
+        if current_user.is_authenticated:
+            return redirect(url_for('main.dashboard'))
+        else:
+            return render_template('login.html')
+
+
+@main_bp.route('/dashboard')
+def dashboard():
+    if not current_user.is_authenticated:
+        return render_template('login.html')
+    elif current_user.role == "customer":
+        ThisUsersOrders = Order.query.order_by(Order.booked_at.desc()).all()
+        return render_template('c_dash.html', orders=ThisUsersOrders)
+    elif current_user.role == "professional":
+        professional = Professionals.query.filter_by(
+            user_id=current_user.id).first()
+        if professional.status == "blocked":
+            return "<p>Your Services are blocked. Contact Admin</p>"
+        professional_id = professional.id
+        orders = Order.query.filter_by(professional_id=professional_id).order_by(
+            Order.booked_at.desc()).all()
+        return render_template('pro_dash.html', professional=professional, orders=orders)
+    elif current_user.role == "admin":
+        return render_template('admin/index.html')
 
 @main_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -51,58 +93,31 @@ def userInfo():
     return render_template("user_info.html")
 
 @main_bp.route('/user_info_edit', methods=["POST"])
+@login_required  # Ensure the user is logged in
 def userInfoEdit():
-    changedUsername = request.form["changedUsername"]
-    if User.query.filter_by(username = changedUsername).first():
-        flash("The username is not available. Try something else", "error")
-        return redirect(url_for('main.userInfo'))
-    else:
-        current_user.username = changedUsername
-        current_user.name = request.form["changedName"]
-        current_user.email = request.form["changedEmail"]
-        current_user.address = request.form["changedAddress"]
-        current_user.phone = request.form["changedPhone"]
+    formData = request.form
 
-        db.session.commit()
-    return redirect(url_for('main.dashboard'))
+    for key, value in formData.items():
+        if value:  # Only update if there's a value
+            if key == "username":
+                # Check if the username is already taken
+                if User.query.filter_by(username=value).first():
+                    flash("The username is not available. Try something else", "error")
+                    return redirect(url_for('main.userInfo'))
+            
+            # Update the user's attribute
+            setattr(current_user, key, value)  # Use setattr to set the attribute
 
+    db.session.commit()  # Save changes to the database
 
-@main_bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-
-        if user and (user.password == password):
-            login_user(user)
-            flash('Login successful!', 'success')
-            return redirect(url_for('main.dashboard'))
-        else:
-            flash('Invalid credentials!', 'danger')
-            return render_template('login.html')
-    else:
-        return render_template('login.html')
+    flash("Data updated successfully!", "success")
+    return redirect(url_for('main.userInfo'))
 
 
-@main_bp.route('/dashboard')
-def dashboard():
-    if not current_user.is_authenticated:
-        return render_template('login.html')
-    elif current_user.role == "customer":
-        ThisUsersOrders = Order.query.order_by(Order.booked_at.desc()).all()
-        return render_template('c_dash.html', orders=ThisUsersOrders)
-    elif current_user.role == "professional":
-        professional = Professionals.query.filter_by(
-            user_id=current_user.id).first()
-        if professional.status == "blocked":
-            return "<p>Your Services are blocked. Contact Admin</p>"
-        professional_id = professional.id
-        orders = Order.query.filter_by(professional_id=professional_id).order_by(
-            Order.booked_at.desc()).all()
-        return render_template('pro_dash.html', professional=professional, orders=orders)
-    elif current_user.role == "admin":
-        return render_template('admin/index.html')
+
+
+
+
 
 
 @main_bp.route('/logout')

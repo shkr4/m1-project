@@ -25,7 +25,7 @@
 
     {% if current_user.name %}
         <div style="position: absolute; right: 0;">
-            Username: {{current_user.username}}<br>
+            Username: <a href="{{url_for('main.userInfo')}}"><b>{{current_user.username}}</b></a><br>
             I am a: {{current_user.role}}<br>
             <a href="{{url_for('main.logout')}}"><u>Logout</u></a>
         </div>

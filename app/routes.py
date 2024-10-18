@@ -45,6 +45,27 @@ def register():
     else:
         return render_template('reg_customer.html')
 
+@main_bp.route('/userInfo', methods=['GET'])
+@login_required
+def userInfo():
+    return render_template("user_info.html")
+
+@main_bp.route('/user_info_edit', methods=["POST"])
+def userInfoEdit():
+    changedUsername = request.form["changedUsername"]
+    if User.query.filter_by(username = changedUsername).first():
+        flash("The username is not available. Try something else", "error")
+        return redirect(url_for('main.userInfo'))
+    else:
+        current_user.username = changedUsername
+        current_user.name = request.form["changedName"]
+        current_user.email = request.form["changedEmail"]
+        current_user.address = request.form["changedAddress"]
+        current_user.phone = request.form["changedPhone"]
+
+        db.session.commit()
+    return redirect(url_for('main.dashboard'))
+
 
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():

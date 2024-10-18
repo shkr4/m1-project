@@ -8,7 +8,7 @@
 
 {% if professional.orders %}
     <h5>Your Orders:</h5>
-    <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+    <div style="width: 50%; max-height: 100px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
         <ol>
             {% for order in orders %}
                 <li>
@@ -37,7 +37,13 @@
                 </li>
             {% endfor %}
         </ol>
-    </div>  
+    </div>
+<table>
+    <tr>
+        <th><b>Order Id</b></th>
+        <th></th>
+    </tr>
+</table>
 {% endif %}
 
     

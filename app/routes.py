@@ -20,6 +20,7 @@ def home():
     else:
         return redirect(url_for('main.dashboard'))
 
+
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -46,7 +47,8 @@ def dashboard():
     if not current_user.is_authenticated:
         return render_template('login.html')
     elif current_user.role == "customer":
-        ThisUsersOrders = Order.query.order_by(Order.booked_at.desc()).all()
+        ThisUsersOrders = Order.query.filter_by(user_id=current_user.id).order_by(
+            Order.booked_at.desc()).all()
         return render_template('c_dash.html', orders=ThisUsersOrders)
     elif current_user.role == "professional":
         professional = Professionals.query.filter_by(
@@ -59,6 +61,7 @@ def dashboard():
         return render_template('pro_dash.html', professional=professional, orders=orders)
     elif current_user.role == "admin":
         return render_template('admin/index.html')
+
 
 @main_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -87,10 +90,12 @@ def register():
     else:
         return render_template('reg_customer.html')
 
+
 @main_bp.route('/userInfo', methods=['GET'])
 @login_required
 def userInfo():
     return render_template("user_info.html")
+
 
 @main_bp.route('/user_info_edit', methods=["POST"])
 @login_required  # Ensure the user is logged in
@@ -104,20 +109,15 @@ def userInfoEdit():
                 if User.query.filter_by(username=value).first():
                     flash("The username is not available. Try something else", "error")
                     return redirect(url_for('main.userInfo'))
-            
+
             # Update the user's attribute
-            setattr(current_user, key, value)  # Use setattr to set the attribute
+            # Use setattr to set the attribute
+            setattr(current_user, key, value)
 
     db.session.commit()  # Save changes to the database
 
     flash("Data updated successfully!", "success")
     return redirect(url_for('main.userInfo'))
-
-
-
-
-
-
 
 
 @main_bp.route('/logout')

@@ -1,47 +1,88 @@
 {% extends "base.html" %}
 {% block title %}{{current_user.username}}{% endblock %}
 
+{% block style %}
+
+<style>
+    table, th, td {
+      border:1px solid black;
+      text-align: center;
+    }
+</style>
+
+{% endblock %}
+
 {% block content %}
 
-<h1>Dashboard of <u>{{current_user.name}}</u></h1>
+<div style="background-color: aliceblue; padding: 15px;">
+    <h1>Dashboard of <u>{{current_user.name}}</u></h1>
+</div>
+<br><br>
 
-<h5>What Service are you looking for? </h5>
-<div>
+<div style="background-color: azure; padding: 15px;">
+    <h5>What Service are you looking for? </h5>
     <form method="post" action="/FindService">
-        <input type="text" name="req_service">
-        <input type="submit" value="Find Service">
+            <input type="text" name="req_service">
+            <input type="submit" value="Find Service">
     </form>
 </div>
 
-{% if orders %}
-    <h5>Your Orders:</h5>
-    <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">        
-            <ol>
-                {% for order in orders %}
-                <li>
-                    <p>Order ID: <b>{{order.order_id}}</b></p>
-                    <p>Professional's Name: <b>{{order.professional.business_name}}</b></p>
-                    <p>Status: <b>{{order.status}}</b></p>
-                    {% if order.rating %}
-                        <p>Rating: <b>{{order.rating}}</b></p>
-                    {% endif %}
-                    {% if order.status == "requested" or order.status == "accepted" %}
-                        <form method="post" action="/close_it">
-                            <input type="hidden" name="if_close" value="{{order.order_id}}">
-                            <label for="rating"><b>Who many Stars for this service: </b></label>
-                            <input type="number" name="rating"><br>
-                            <label for="remark">Feedback: </label>
-                            <input type="text" name="remark">
-                            <input type="submit" value="Close">
-                        </form>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ol>
-       
-{% endif %}
+<br>
 
+{% if orders %}
+<h2 style="color: rosybrown; padding: 15px;">Your Orders:</h2>
+    <div style="width: 75%; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 25px; background-color: #F3FEB8;">
+        <table style="width:80%">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Customer Phone</th>
+                <th>Customer Address</th>
+                <th>Date-Time</th>
+                <th>Status</th>
+                <th>Rating</th>
+                <th>Your Feedback</th>
+                <th>Action</th>
+            </tr>
+            {% for order in orders %}
+        
+                <tr>
+                    <td>{{order.order_id}}</td>
+                    <td>{{order.service}}</td>
+                    <td>{{order.user.phone}}</td>
+                    <td>{{order.user.address}}</td>
+                    <td>{{order.booked_at}}</td>
+                    <td>{{order.status}}</td>
+                    <td>
+                        {% if order.status == "requested" or order.status == "accepted" %}
+                            <form method="post" action="/close_it">
+                            <input type="hidden" name="if_close" value="{{order.order_id}}">
+                            <!-- <label for="rating"><b>Who many Stars for this service: </b></label> -->
+                            <input type="number" name="rating" placeholder="Must not be left blank. Provide between 1-5."><br>
+                        {% else %}
+                            {{order.rating}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.status == "requested" or order.status == "accepted" %}
+                            <!-- <label for="remark">Feedback: </label> -->
+                            <input type="text" name="remark">
+                        {% else %}
+                        {{order.remark_by_customer}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.status == "requested" or order.status == "accepted" %}
+                            <input type="submit" value="CLOSE">
+                        {% endif %}
+                    </td>
+                </tr>
+        
+            {% endfor %}
+        </table>
     </div>
+</form>
+{% endif %}
 
 {% if current_user.role == "customer" %}
 <div style="position: absolute; right: 0; bottom: 0;">

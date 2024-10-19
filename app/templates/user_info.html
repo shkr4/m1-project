@@ -4,16 +4,21 @@
 
 {% block content %}
 <h1>User's Information of {{current_user.name}}</h1>
-	<div style="position: absolute; left: 50%; transform: translateX(-50%);">
+	<div>
 		<form method="post" action="/user_info_edit">
-			<p>Name: <b>{{current_user.name}}</b></p> <input type="text" name="name" placeholder="Edit Name?">
-			<p>Username: <b>{{current_user.username}}</b></p> <input type="text" name="username" placeholder="Edit Username?">
-			<p>E-Mail: <b>{{current_user.email}}</b></p> <input type="text" name="email" placeholder="Edit E-Mail?">
-			<p>Phone: <b>{{(current_user.phone | string)[:3]+"xxxx"+ (current_user.phone | string)[8:]}}</b></p> <input type="text" name="phone" placeholder="Edit Phone Number?">
-			<p>I am a: <b>{{current_user.role}}</b></p>
-			<p>Address: <b>{{current_user.address}}</b></p> <input type="text" name="address" placeholder="Edit Address?">
-			<p>Signed Up at: <b>{{current_user.created_at}}</b></p>
-			<p>Updated On at: <b>{{current_user.updated_at}}</b></p>
+			<label for="name">Name: <b>{{current_user.name}}</label>
+			<input type="text" name="name" placeholder="Edit Name?"> <br>
+			<label>Username: <b>{{current_user.username}}</b></label>
+			<input type="text" name="username" placeholder="Edit Username?"><br>
+			<label>E-Mail: <b>{{current_user.email}}</p></label>
+			<input type="text" name="email" placeholder="Edit E-Mail?"><br>
+			<label>Phone: <b>{{(current_user.phone | string)[:3]+"xxxx"+ (current_user.phone | string)[8:]}}</b></label>
+			<input type="text" name="phone" placeholder="Edit Phone Number?"><br>
+			<label>I am a: <b>{{current_user.role}}</b></label><br>
+			<label>Address: <b>{{current_user.address}}</b></label>
+			<input type="text" name="address" placeholder="Edit Address?"><br>
+			<label>Signed Up at: <b>{{current_user.created_at}}</b></label><br>
+			<label>Updated On at: <b>{{current_user.updated_at}}</b></label><br>
 			<input type="submit" value="Submit Changes">
 		</form>
 	</div>

@@ -68,6 +68,7 @@ class Order(db.Model):
     closed_at = db.Column(db.DateTime)
     closed_by = db.Column(db.String)
     remark_by_customer = db.Column(db.Text)
+    # service = db.relationship('Services', backref="order")
 
     # No need for explicit relationship definition here as 'backref' handles it
 

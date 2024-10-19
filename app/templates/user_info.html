@@ -3,10 +3,10 @@
 {% block title %}{{current_user.username}}{% endblock %}
 
 {% block content %}
-<h1>User's Information of {{current_user.name}}</h1>
+<h1>User's Information of <u>{{current_user.name}}</u></h1>
 	<div>
 		<form method="post" action="/user_info_edit">
-			<label for="name">Name: <b>{{current_user.name}}</label>
+			<label>Name: <b>{{current_user.name}}</b></label>
 			<input type="text" name="name" placeholder="Edit Name?"> <br>
 			<label>Username: <b>{{current_user.username}}</b></label>
 			<input type="text" name="username" placeholder="Edit Username?"><br>
@@ -22,4 +22,6 @@
 			<input type="submit" value="Submit Changes">
 		</form>
 	</div>
+	<br>
+	<a href="{{url_for('main.dashboard')}}">Go to Dashboard</a>
 {% endblock %}

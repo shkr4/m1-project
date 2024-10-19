@@ -1,2 +1,3 @@
 .venv/
 aap/__pycache__/
+./aap/__pycache__/

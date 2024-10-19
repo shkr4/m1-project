@@ -60,7 +60,14 @@ def dashboard():
             Order.booked_at.desc()).all()
         return render_template('pro_dash.html', professional=professional, orders=orders)
     elif current_user.role == "admin":
-        return render_template('admin/index.html')
+        return redirect(url_for('main.admin'))
+
+@main_bp.route('/admin')
+@login_required
+def admin():
+    pros = Professionals.query.all()
+    users = User.query.all()
+    return render_template('admin/index.html', pros=pros, users=user)
 
 
 @main_bp.route('/register', methods=['GET', 'POST'])
@@ -251,7 +258,7 @@ def FindService():
     #     Services.service.like(f'%{req_service}%')).all()  # Get all matches
 
     # Pass both the requested service and the results to the template
-    return render_template('find_service_result.html', req_service=req_service, services=avlbleService)
+    return render_template('find_service_result.html', req_service=req_service, service=avlbleService)
 
 
 @main_bp.route('/PlaceOrder', methods=['POST'])
@@ -259,9 +266,10 @@ def FindService():
 def PlaceOrder():
     user_id = request.form["customer"]
     professional_id = request.form["professional_id"]
+    service = request.form["service"]
 
     new_order = Order(user_id=user_id, professional_id=professional_id,
-                      status="requested", rating=0.0,
+                      status="requested", rating=0.0, service=service
                       )
     db.session.add(new_order)
     db.session.commit()

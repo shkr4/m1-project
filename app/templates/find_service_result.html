@@ -5,14 +5,14 @@
 
 <h2>Results for "{{ req_service }}"</h2>
 
-{% if services %}
+{% if service %}
     <ol>
-    {% for service in services %}
+    {% for service in service %}
             <div>
                 <li>
                     <form action="/PlaceOrder" method="post">
                         <input type="hidden" name="customer" value="{{current_user.id}}">
-                        <!-- <input type="hidden" name="professional" value="{{service.professional}}"> -->
+                        <input type="hidden" name="service" value="{{service.service}}">
                         <input type="hidden" name="professional_id" value="{{service.serviceProvider}}">                    
                         <p>Service Name: <u>{{ service.service }}</u></p>
                         <P>Price: <u>{{ service.price }}</u></P>

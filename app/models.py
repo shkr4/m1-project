@@ -47,7 +47,7 @@ class Professionals(db.Model):
 
     orders = db.relationship('Order', backref='professional', lazy=True)
     services = db.relationship('Services', backref='professional', lazy=True)
-    user = db.relationship('User', backref='professionals')
+    user = db.relationship('User', backref='professional')
 
     def __repr__(self):
         return f'{self.business_name}'
@@ -68,20 +68,26 @@ class Order(db.Model):
     closed_at = db.Column(db.DateTime)
     closed_by = db.Column(db.String)
     remark_by_customer = db.Column(db.Text)
-    # service = db.relationship('Services', backref="order")
+    
+    service = db.Column(db.String(100), nullable=False)
 
     # No need for explicit relationship definition here as 'backref' handles it
 
 
-class Services(db.Model):
+#This Model is to only record available srvices and display on the HTML. Do not connect it with other models
+class Services(db.Model): 
     __tablename__ = "services"
 
     id = db.Column(db.Integer, primary_key=True)
+    #order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'))
     service = db.Column(db.String, nullable=False)
     description = db.Column(db.String(200))
     price = db.Column(db.Integer)
     serviceProvider = db.Column(db.Integer, db.ForeignKey('professionals.id'))
     created_at = db.Column(db.DateTime, default=func.now())
+    
+
+    #order = db.relationship('Services', backref="service")
 
     # 'backref' allows easy access to related professionals in the relationship
 

@@ -2,5 +2,21 @@
 
 {% block content %}
 <h1>Welcome to Admin Panel</h1>
-<a href="/admin/user">c</a>
+<a href="/admin/user"><b>Access all the Database</b></a>
+
+{% if pros %}
+<h5>All Professionals: </h5>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Business Name</th>
+		
+	</tr>
+</table>
+
+
+
+
+
 {% endblock %}

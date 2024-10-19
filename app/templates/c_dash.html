@@ -57,25 +57,25 @@
                     <td>{{order.booked_at}}</td>
                     <td>{{order.status}}</td>
                     <td>
-                        {% if order.status == "requested" or order.status == "accepted" %}
+                        {% if order.status == "accepted" %}
                             <form method="post" action="/close_it">
                             <input type="hidden" name="if_close" value="{{order.order_id}}">
                             <!-- <label for="rating"><b>Who many Stars for this service: </b></label> -->
-                            <input type="number" name="rating" placeholder="Must not be left blank. Provide between 1-5."><br>
+                            <input type="number" name="rating" placeholder="Must not be left blank. Provide between 1-5." min="1" max="5"><br>
                         {% else %}
                             {{order.rating}}
                         {% endif %}
                     </td>
                     <td>
-                        {% if order.status == "requested" or order.status == "accepted" %}
+                        {% if order.status == "accepted" %}
                             <!-- <label for="remark">Feedback: </label> -->
                             <input type="text" name="remark">
-                        {% else %}
-                        {{order.remark_by_customer}}
+                        {% elif order.status == "requested" %}
+                        The Professional is processing the order
                         {% endif %}
                     </td>
                     <td>
-                        {% if order.status == "requested" or order.status == "accepted" %}
+                        {% if order.status == "accepted" %}
                             <input type="submit" value="CLOSE">
                         {% endif %}
                     </td>

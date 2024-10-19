@@ -1,9 +1,24 @@
 {% extends 'base.html' %}
 
+{% block title %}All Professionals{% endblock %}
+
+{% block style %}
+
+<style>
+    table, th, td {
+      border:1px solid black;
+      text-align: center;
+    }
+</style>
+
+{% endblock %}
+
 {% block content %}
 <h1>Welcome to Admin Panel</h1>
 <a href="/admin/user"><b>Access all the Database</b></a>
+<br><br>
 
+<div class="container-fluid" style="width: 50%; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 25px; background-color: #F3FEB8;">
 {% if pros %}
 <h5>All Professionals: </h5>
 <table>
@@ -11,9 +26,46 @@
 		<th>ID</th>
 		<th>Name</th>
 		<th>Business Name</th>
-		
+		<th>Total Orders Processed</th>
+		<th>Status</th>		
 	</tr>
+	{% for pro in pros %}
+	<tr>
+		<td>{{pro.id}}</td>
+		<td>{{pro.user.name}}</td>
+		<td>{{pro.business_name}}</td>
+		<td>{{ pro.orders | length }}</td>
+		<td>{{pro.status}}</td>
+	</tr>
+	{% endfor %}
 </table>
+{% endif %}
+</div>
+<br>
+
+<div class="container-fluid" style="width: 50%; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 25px; background-color: #F3FEB8;">
+	{% if users %}
+<h5>All Users: </h5>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Role</th>
+		<th>Total Order Placed</th>		
+		<th>Status</th>		
+	</tr>
+	{% for user in users %}
+	<tr>
+		<td>{{user.id}}</td>
+		<td>{{user.name}}</td>
+		<td>{{user.role}}</td>
+		<td>{{ user.orders | length}}</td>
+		<td>{{user.status}}</td>		
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+</div>
 
 
 

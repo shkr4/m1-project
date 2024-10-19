@@ -29,6 +29,8 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and (user.password == password):
+            if user.status != "active":
+                return "Your account is deactivated. Please contact admin."
             login_user(user)
             flash('Login successful!', 'success')
             return redirect(url_for('main.dashboard'))
@@ -67,7 +69,8 @@ def dashboard():
 def admin():
     pros = Professionals.query.all()
     users = User.query.all()
-    return render_template('admin/index.html', pros=pros, users=user)
+    print(pros, users)
+    return render_template('admin/index.html', pros=pros, users=users)
 
 
 @main_bp.route('/register', methods=['GET', 'POST'])
@@ -80,8 +83,9 @@ def register():
         phone = request.form['phone']
         address = request.form['address']
         role = "customer"
+        status = "active"
         new_user = User(username=username, password=password,
-                        name=name, email=email, role=role, phone=phone, address=address)
+                        name=name, email=email, role=role, phone=phone, address=address, status=status)
 
         try:
             db.session.add(new_user)

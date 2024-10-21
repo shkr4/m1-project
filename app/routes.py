@@ -13,6 +13,24 @@ main_bp = Blueprint('main', __name__)
 login_manager = LoginManager()
 
 
+@main_bp.route('/admin/activate_pro', methods=['POST'])
+@login_required
+def ActivatePro():
+    field1 = request.form["field1"]
+    pro_id = request.form["pro_id"]
+
+    pro = Professionals.query.filter_by(id=pro_id).first()
+    pro.status = "active"
+
+    user_id = pro.user_id
+    user = User.query.filter_by(id=user_id).first()
+    user.role = "professional"
+
+    db.session.commit()
+
+    return redirect(url_for('main.dashboard'))
+
+
 @main_bp.route('/')
 def home():
     if not current_user.is_authenticated:
@@ -63,6 +81,7 @@ def dashboard():
         return render_template('pro_dash.html', professional=professional, orders=orders)
     elif current_user.role == "admin":
         return redirect(url_for('main.admin'))
+
 
 @main_bp.route('/admin')
 @login_required
@@ -161,21 +180,31 @@ def reg_professional():
 
         # Update user role in user table to "professional"
 
-        current_user.role = "professional"
+        # current_user.role = "professional"
+
+        if UpFile and UpFile.filename.endswith('.pdf'):
+            SaveFile(UpFile, current_app, current_user)
+        else:
+            flash('Please upload a valid file!', "error")
+            return render_template("reg_professional.html", ServiceList=ServiceList)
+
+        file_url = f"uploads/{UpFile.filename}"
 
         # Add the this user as a professional in professional database
 
         NewPro = Professionals(user_id=user_id, business_name=Bname,
                                pin=pin, address=address, orders=orders,
                                ServiceOffered=services, YoE=YoE,
-                               status="active")
+                               status="review", doc=file_url)
 
         db.session.add(NewPro)
         db.session.commit()
+
         # services in the Services Table
 
         serviceProvider = Professionals.query.filter_by(
             user_id=user_id).first().id
+
         for item in services.keys():
             ser = item
             price = services[item][0]
@@ -196,10 +225,11 @@ def reg_professional():
             flash('Please upload a valid file!', "error")
             return render_template("reg_professional.html", ServiceList=ServiceList)
 
-        file_url = "temp"  # f"uploads/{UpFile.filename}"
+        file_url = f"uploads/{UpFile.filename}"
 
-        return render_template("pro_dash.html", professional=Professionals.query.filter_by(
-            user_id=user_id).first())
+        return "<p>Your application is received and waiting for admin's approval.</p>"
+
+        # return render_template("pro_dash.html", professional=Professionals.query.filter_by(user_id=user_id).first())
     elif current_user.role in ["professional", "admin"]:
         return redirect(url_for('main.dashboard'))
     else:

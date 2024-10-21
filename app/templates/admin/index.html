@@ -27,7 +27,9 @@
 		<th>Name</th>
 		<th>Business Name</th>
 		<th>Total Orders Processed</th>
-		<th>Status</th>		
+		<th>Status</th>
+		<th>Document</th>
+		<th>Action</th>		
 	</tr>
 	{% for pro in pros %}
 	<tr>
@@ -36,6 +38,17 @@
 		<td>{{pro.business_name}}</td>
 		<td>{{ pro.orders | length }}</td>
 		<td>{{pro.status}}</td>
+		<td><a href="{{ url_for('static', filename=pro.doc) }}">Document</a></td>
+		
+		<td>
+			{% if pro.status == "review" %}
+			<form method="post" action="/admin/activate_pro">
+				<input type="hidden" name="field1" value="active">
+				<input type="hidden" name="pro_id" value="{{pro.id}}">
+				<input type="submit" value="Approve">
+			</form>
+			{% endif %}
+		</td>
 	</tr>
 	{% endfor %}
 </table>
